@@ -1,14 +1,15 @@
 call plug#begin('~/.config/nvim/plugged')
 
 " Plugins {
-  " ctrl-p is a fuzzy file finder.
   Plug 'kien/ctrlp.vim'
-  " airline is a better status line and a tab-bar for nvim.
   Plug 'bling/vim-airline'
-  " gruvbox colorscheme. Seems to work the best for me.
   Plug 'morhetz/gruvbox'
-  " neomake is a code linting tool that runs in the background.
   Plug 'neomake/neomake'
+  Plug 'tpope/vim-fugitive'
+  Plug 'scrooloose/nerdtree'
+  Plug 'jistr/vim-nerdtree-tabs'
+  Plug 'majutsushi/tagbar'
+  Plug 'scrooloose/syntastic'
 " }
 
 call plug#end()
@@ -159,8 +160,8 @@ let mapleader="\<SPACE>"
   vmap <Leader>P "+P
 
   " Move between buffers
-  nmap <Leader>l :bnext<CR>
-  nmap <Leader>h :bprevious<CR>
+  nmap <Leader><Right> :bnext<CR>
+  nmap <Leader><Left> :bprevious<CR>
 " }
 
 
@@ -186,11 +187,11 @@ let mapleader="\<SPACE>"
   " }
   " CtrlP {
     " Open file menu
-    nnoremap <Leader>o :CtrlP<CR>
+    nnoremap <Leader>f :CtrlP<CR>
     " Open buffer menu
     nnoremap <Leader>b :CtrlPBuffer<CR>
     " Open most recently used files
-    nnoremap <Leader>f :CtrlPMRUFiles<CR>
+    nnoremap <Leader>o :CtrlPMRUFiles<CR>
   " }
   " neomake {
     autocmd! BufWritePost * Neomake
@@ -204,6 +205,28 @@ let mapleader="\<SPACE>"
     " FIXME: Preview opens to left and is very narrow
     let g:netrw_preview=1   " open previews vertically
   " }
-" }
+  " nerdtree {
+    autocmd StdinReadPre * let s:std_in=1
+    autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+    autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+    let NERDTreeShowHidden=1
+  " }
+  " nerdtreetabs {
+    let g:nerdtree_tabs_open_on_gui_startup=2
+  "}
+  " tagbar {
+    autocmd VimEnter * exec 'TagbarToggle'
+  " }
+  " syntastic {
+    set statusline+=%#warningmsg#
+    set statusline+=%{SyntasticStatuslineFlag()}
+    set statusline+=%*
 
+    let g:syntastic_always_populate_loc_list = 1
+    let g:syntastic_auto_loc_list = 1
+    let g:syntastic_check_on_open = 1
+    let g:syntastic_check_on_wq = 0
+
+    let g:syntastic_sh_checkers = ['shellcheck']
+  " }
 " vim:set ft=vim sw=2 ts=2:
